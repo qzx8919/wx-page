@@ -11,23 +11,31 @@
 <body>
     
     <div id="main-content">
-        <div class="main-head">3</div>
+        <div class="main-head">4</div>
         <button onclick="configWx()">config wx</button>
         <div>separatore.....</div>
         <button onclick="openScan()">open scan</button>
     </div>
 
     <script>
+
+        function createTimestamp() {
+            let timestamp = Math.floor((new Date()).getTime());
+            console.log(timestamp)
+        }
+
+        // createTimestamp()
+
         function configWx(){
             console.log('begin config wx')
             const data = {
-  debug: true,
-  appId: 'wx57c03b14839de67d',
-  timestamp: 162919595,
-  nonceStr: 'TiScrRNjMJJuxQu',
-  signature: '1405ce6c83947b2f4698b99d758ccfaf6e102a9c',
-  jsApiList: [ 'scanQRCode' ]
-}
+                debug: true,
+                appId: 'wx57c03b14839de67d',
+                timestamp: 1629207527,
+                nonceStr: 'aDwzxjhgyvdGDswa',
+                signature: 'b66b98e7e438edfa2a9f0c5eeae3ac602760343a',
+                jsApiList: [ 'scanQRCode' ]
+            }
 
             alert(JSON.stringify(data))
 
@@ -46,9 +54,11 @@
                 needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
                 scanType: ['qrCode'], // 可以指定扫二维码还是一维码，默认二者都有
                 success(res) {
-                    const result = res.resultStr // 当needResult 为 1 时，扫码返回的结果
-                    console.log(result);
-                    alert(result)
+                    setTimeout(()=>{
+                        const result = res.resultStr // 当needResult 为 1 时，扫码返回的结果
+                        alert(JSON.stringify(result))
+                    }, 2000)
+                    
                 },
                 fail(res){
                     alert(res)
