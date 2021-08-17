@@ -14,7 +14,7 @@
 <body>
     
     <div id="main-content">
-        <div class="main-head">7</div>
+        <div class="main-head">8</div>
         <button onclick="configWx()">config wx</button>
         <div>separatore.....</div>
         <button onclick="openScan()">open scan</button>
@@ -61,7 +61,7 @@
                     setTimeout(()=>{
                         const result = res.resultStr // 当needResult 为 1 时，扫码返回的结果
                         alert(JSON.stringify(result))
-                    }, 100)
+                    }, 1000)
                     
                 },
                 fail(res){
