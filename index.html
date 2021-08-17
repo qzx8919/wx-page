@@ -14,7 +14,7 @@
 <body>
     
     <div id="main-content">
-        <div class="main-head">8</div>
+        <div class="main-head">9</div>
         <button onclick="configWx()">config wx</button>
         <div>separatore.....</div>
         <button onclick="openScan()">open scan</button>
@@ -57,10 +57,10 @@
                 needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
                 scanType: ['qrCode'], // 可以指定扫二维码还是一维码，默认二者都有
                 success(res) {
-                    alert(JSON.stringify(res))
+                    alert('success callback ...  ' + JSON.stringify(res))
                     setTimeout(()=>{
-                        const result = res.resultStr // 当needResult 为 1 时，扫码返回的结果
-                        alert(JSON.stringify(result))
+                        // const result = res.resultStr // 当needResult 为 1 时，扫码返回的结果
+                        alert('settimeout ...  '+ JSON.stringify(res))
                     }, 1000)
                     
                 },
