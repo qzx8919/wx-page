@@ -4,15 +4,18 @@ function Camera(video) {
 
 Camera.prototype.init = function(onsuccess, onerror) {
     // 调用浏览器API参数
-    const constrains = {
-        video: {
-          height: 800,
-          facingMode: {
-            // 强制后置摄像头
-            exact: 'environment'
-          }
-        }
-      };
+    // const constrains = {
+    //     video: {
+    //       height: 800,
+    //       facingMode: {
+    //         // 强制后置摄像头
+    //         exact: 'environment'
+    //       }
+    //     }
+    //   };
+
+    const constrains = { audio: false, video: true };
+    
 
     // 老的浏览器可能根本没有实现 mediaDevices，所以我们可以先设置一个空的对象
     if (navigator.mediaDevices === undefined) {
