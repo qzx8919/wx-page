@@ -27,12 +27,11 @@
 
 
 </style>
-<!-- <script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.0/vconsole.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.0/vconsole.min.js"></script>
 <script>
     // init vConsole
     var vConsole = new VConsole();
-    console.log('Hello world');
-</script> -->
+</script>
 <script>
     function docReady(fn) {
         // see if DOM is already available
@@ -45,11 +44,7 @@
         }
     }
 
-
-
     docReady(()=>{
-        console.log('begin start ')
-        // const video = document.getElementById('video');
 
         const startEl = document.getElementById("start-el");
         const stopEl = document.getElementById("stop-el");
@@ -61,7 +56,6 @@
         startEl.addEventListener('click', function(e){
             console.log('start the camera ... ')
             camera.open()
-            
         });
 
         stopEl.addEventListener('click', function(e){
