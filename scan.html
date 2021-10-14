@@ -6,7 +6,7 @@
     <div id="qr-reader-results"></div>
     <button id="start-el">start</button>
     <button id="stop-el">stop</button>
-    <video id="video" autoPlay playsInline ></video>
+    <!-- <video id="video" autoPlay playsInline ></video> -->
     
 </body>
 <script src="./scan.js"></script> 
@@ -14,16 +14,24 @@
     #start-el {
         position: absolute;
         top: 400px;
+        font-size: 40px;
     }
 
     #stop-el {
         position: absolute;
         top: 400px;
         left: 200px;
+        font-size: 40px;
     }
 
 
 </style>
+<script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.0/vconsole.min.js"></script>
+<script>
+    // init vConsole
+    var vConsole = new VConsole();
+    console.log('Hello world');
+</script>
 <script>
     function docReady(fn) {
         // see if DOM is already available
@@ -36,16 +44,29 @@
         }
     }
 
+    function createVideoElement(width) {
+        const videoElement = document.createElement("video");
+        videoElement.style.width = `${width}px`;
+        videoElement.muted = true;
+        videoElement.setAttribute("muted", "true");
+        videoElement.playsInline = true;
+        return videoElement;
+    }
+
     docReady(()=>{
         console.log('begin start ')
-        const video = document.getElementById('video');
-        const camera = new Camera(video)
+        // const video = document.getElementById('video');
 
         const startEl = document.getElementById("start-el");
         // const stopEl = document.getElementById("stop-el");
 
         startEl.addEventListener('click', function(e){
+            console.log('call the start button... ')
+            const video = createVideoElement(400)
+            document.body.appendChild(video)
+
             console.log('start the camera ... ')
+            const camera = new Camera(video)
             camera.open()
             
         })
