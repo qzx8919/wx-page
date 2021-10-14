@@ -1,5 +1,7 @@
-function Camera(video) {
-    this.video = video;
+function Camera(el) {
+  this.el = el
+  this.video = null;
+  this.mediaStream = null;
 }
 
 Camera.prototype.init = function(onsuccess, onerror) {
@@ -46,12 +48,16 @@ Camera.prototype.init = function(onsuccess, onerror) {
 }
 
 Camera.prototype.open = function() {
-    const video = this.video;
+    const video = createVideoElement(400);
+    this.el?.appendChild(video);
+    this.video = video;
+    const $this = this;
     function onsuccess(stream) {
         video.srcObject = stream;
         video.onerror = function(){
             stream.stop();
         }
+        $this.mediaStream = stream;
         stream.onended = onerror
         video.onloadedmetadata = () => {
             if (stream.active) {
@@ -67,4 +73,36 @@ Camera.prototype.open = function() {
     }
 
     this.init(onsuccess, onerror);
+}
+
+Camera.prototype.close = function(){
+  console.log("begin to close the camera .... ")
+  const mediaStream = this.mediaStream;
+  const tracksToClose = mediaStream && mediaStream.getVideoTracks().length || 0;
+  var tracksClosed = 0;
+  console.log(mediaStream, tracksToClose)
+
+  const onAllTracksClosed = () => {
+    this.el?.removeChild(this.video);
+    this.mediaStream = null;
+    this.video = null;
+  }
+
+  mediaStream && mediaStream.getVideoTracks().forEach((videoTrack) => {
+    mediaStream.removeTrack(videoTrack);
+    videoTrack.stop();
+    ++tracksClosed;
+    if (tracksClosed >= tracksToClose) {
+        onAllTracksClosed();
+    }
+  });
+}
+
+function createVideoElement(width) {
+  const videoElement = document.createElement("video");
+  videoElement.style.width = `${width}px`;
+  videoElement.muted = true;
+  videoElement.setAttribute("muted", "true");
+  videoElement.playsInline = true;
+  return videoElement;
 }

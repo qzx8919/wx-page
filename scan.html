@@ -7,6 +7,7 @@
     <button id="start-el">start</button>
     <button id="stop-el">stop</button>
     <!-- <video id="video" autoPlay playsInline ></video> -->
+    <div id="sanner"></div>
     
 </body>
 <script src="./scan.js"></script> 
@@ -26,12 +27,12 @@
 
 
 </style>
-<script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.0/vconsole.min.js"></script>
+<!-- <script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.0/vconsole.min.js"></script>
 <script>
     // init vConsole
     var vConsole = new VConsole();
     console.log('Hello world');
-</script>
+</script> -->
 <script>
     function docReady(fn) {
         // see if DOM is already available
@@ -44,34 +45,30 @@
         }
     }
 
-    function createVideoElement(width) {
-        const videoElement = document.createElement("video");
-        videoElement.style.width = `${width}px`;
-        videoElement.muted = true;
-        videoElement.setAttribute("muted", "true");
-        videoElement.playsInline = true;
-        return videoElement;
-    }
+
 
     docReady(()=>{
         console.log('begin start ')
         // const video = document.getElementById('video');
 
         const startEl = document.getElementById("start-el");
-        // const stopEl = document.getElementById("stop-el");
+        const stopEl = document.getElementById("stop-el");
+
+        let camera = null;
+        const sanner = document.getElementById("sanner");
+        camera = new Camera(sanner);
 
         startEl.addEventListener('click', function(e){
-            console.log('call the start button... ')
-            const video = createVideoElement(400)
-            document.body.appendChild(video)
-
             console.log('start the camera ... ')
-            const camera = new Camera(video)
             camera.open()
             
+        });
+
+        stopEl.addEventListener('click', function(e){
+            console.log("stop the camera .... ");
+            camera.close();
         })
 
-        
     });
 
 </script>
