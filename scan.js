@@ -110,9 +110,14 @@ Camera.prototype.foreverScan = function(qrCodeSuccessCallback, qrCodeErrorCallba
   const clientHeight = video.clientHeight;
   const videoWidth = video.videoWidth;
   const videoHeight = video.videoHeight;
+  
+  const ctx = this.context;
+  ctx.canvas.width = videoWidth;
+  ctx.canvas.height = videoHeight;
 
   console.log(' begin drawing the video image ... ', clientWidth, clientHeight, videoWidth, videoHeight );
-  this.context.drawImage(video, 0, 0, videoWidth, videoWidth, 0, 0, clientWidth, clientHeight);
+  ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+
 
   const triggerNextScan = () => {
     this.foreverScanTimeout = setTimeout(() => {
