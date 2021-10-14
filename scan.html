@@ -1,0 +1,98 @@
+<html>
+<head>
+    <title>Html-Qrcode Demo</title>
+<body>
+    <div id="qr-reader" style="width:500px"></div>
+    <div id="qr-reader-results"></div>
+    <button id="start-el">start</button>
+    <button id="stop-el">stop</button>
+    <video id="video" autoPlay playsInline ></video>
+</body>
+<!-- <script src="./html5-qrcode.min.js"></script> -->
+<script src="./scan.js"></script> 
+<style>
+    #start-el {
+        position: absolute;
+        top: 400px;
+    }
+
+    #stop-el {
+        position: absolute;
+        top: 400px;
+        left: 200px;
+    }
+
+
+</style>
+<script>
+    function docReady(fn) {
+        // see if DOM is already available
+        if (document.readyState === "complete"
+            || document.readyState === "interactive") {
+            // call on next available tick
+            setTimeout(fn, 1);
+        } else {
+            document.addEventListener("DOMContentLoaded", fn);
+        }
+    }
+
+    docReady(()=>{
+        console.log('begin start ')
+        const video = document.getElementById('video');
+        const camera = new Camera(video)
+        camera.open()
+    });
+
+    // docReady1(function () {
+    //     var resultContainer = document.getElementById('qr-reader-results');
+    //     var lastResult, countResults = 0;
+    //     function onScanSuccess(decodedText, decodedResult) {
+    //         if (decodedText !== lastResult) {
+    //             ++countResults;
+    //             lastResult = decodedText;
+    //             // Handle on success condition with the decoded message.
+    //             console.log(`Scan result ${decodedText}`, decodedResult);
+    //         }
+    //     }
+
+    //     var html5QrcodeScanner = new Html5QrcodeScanner(
+    //         "qr-reader", { fps: 10, qrbox: 250 });
+    //     html5QrcodeScanner.render(onScanSuccess);
+    // });
+
+
+    // docReady(function(){
+    //     const startEl = document.getElementById("start-el");
+    //     const stopEl = document.getElementById("stop-el");
+
+    //     const html5QrCode = new Html5Qrcode("qr-reader");
+    //     const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+    //         /* handle success */
+    //         console.log(decodedText, decodedResult)
+    //     };
+    //     const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+       
+
+    //     startEl.addEventListener('click', function(e){
+    //         console.log('start the camera ... ')
+
+    //          // If you want to prefer back camera
+    //         html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
+            
+    //     })
+
+    //     stopEl.addEventListener('click', function(e){
+    //         console.log("stop the camera .... ")
+
+    //         html5QrCode.stop().then((ignore) => {
+    //         // QR Code scanning is stopped.
+    //         }).catch((err) => {
+    //         // Stop failed, handle it.
+    //         });
+    //     })
+    // });
+
+</script>
+</head>
+</html>
