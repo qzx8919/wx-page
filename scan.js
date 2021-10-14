@@ -2,9 +2,22 @@ function Camera(el) {
   this.el = el
   this.video = null;
   this.mediaStream = null;
+  this.canvas = null;
+  this.isScanning = false;
+  this.qrcode = null;
+  this.init()
 }
 
-Camera.prototype.init = function(onsuccess, onerror) {
+Camera.prototype.init = function() {
+  this.canvas = createCanvasElement(400, 300);
+  this.context = this.canvas.getContext("2d");
+  this.el.appendChild(this.canvas);
+  
+  // this.qrcode = new Html5QrcodeShim();
+
+}
+
+Camera.prototype.scan = function(onsuccess, onerror) {
     // 调用浏览器API参数
     // const constrains = {
     //     video: {
@@ -47,18 +60,30 @@ Camera.prototype.init = function(onsuccess, onerror) {
 
 }
 
-Camera.prototype.open = function() {
+Camera.prototype.open = function(qrCodeSuccessCallback, qrCodeErrorCallback) {
     const video = createVideoElement(400);
     this.el?.appendChild(video);
     this.video = video;
     const $this = this;
     function onsuccess(stream) {
         video.srcObject = stream;
-        video.onerror = function(){
-            stream.stop();
+        const onVideoError = () => {
+          stream.stop();
         }
         $this.mediaStream = stream;
-        stream.onended = onerror
+        stream.onended = onVideoError
+        // Attach listeners to video.
+        video.onabort = onVideoError;
+        video.onerror = onVideoError;
+        video.onplaying = () => {
+             console.log('in the onplaying')
+            // start scanning after video feed has started
+            $this.foreverScan(
+                qrCodeSuccessCallback,
+                qrCodeErrorCallback);
+            // resolve(/* void */ null);
+        }
+
         video.onloadedmetadata = () => {
             if (stream.active) {
               video.play();
@@ -66,17 +91,68 @@ Camera.prototype.open = function() {
               console.log('stream is not active ... ');
             }
         };
+        
     }
 
     function onerror(err){
         console.log('error function ', err)
     }
 
-    this.init(onsuccess, onerror);
+    this.scan(onsuccess, onerror);
+}
+
+Camera.prototype.foreverScan = function(qrCodeSuccessCallback, qrCodeErrorCallback){
+  if(this.video == null){
+    return;
+  }
+  const video = this.video;
+  const clientWidth = video.clientWidth;
+  const clientHeight = video.clientHeight;
+  const videoWidth = video.videoWidth;
+  const videoHeight = video.videoHeight;
+
+  console.log(' begin drawing the video image ... ', clientWidth, clientHeight, videoWidth, videoHeight );
+  this.context.drawImage(video, 0, 0, videoWidth, videoWidth, 0, 0, clientWidth, clientHeight);
+
+  const triggerNextScan = () => {
+    this.foreverScanTimeout = setTimeout(() => {
+        this.foreverScan(qrCodeSuccessCallback, qrCodeErrorCallback);
+    }, getTimeoutFps(10));
+  };
+
+  this.scanContext(qrCodeSuccessCallback, qrCodeErrorCallback)
+  .then((isSuccessfull) => {
+    if(isSuccessfull){
+
+    }else{
+      triggerNextScan();
+    }
+  }).catch((error) => {
+      console.log("Error happend while scanning context", error);
+      triggerNextScan();
+  });   
+
+}
+
+Camera.prototype.scanContext = function(qrCodeSuccessCallback, qrCodeErrorCallback){
+  // return this.qrcode.decodeAsync(this.canvas).then((result) => {
+  //     qrCodeSuccessCallback(result.text);
+  //     return true;
+  // }).catch((error) => {
+  //     let errorMessage = `QR code parse error, error = ${error}`;
+  //     qrCodeErrorCallback(errorMessage);
+  //     return false;
+  // });
+
+  return Promise.reject();
 }
 
 Camera.prototype.close = function(){
   console.log("begin to close the camera .... ")
+  if(this.foreverScanTimeout){
+    clearTimeout(this.foreverScanTimeout);
+    this.foreverScanTimeout = null;
+  }
   const mediaStream = this.mediaStream;
   const tracksToClose = mediaStream && mediaStream.getVideoTracks().length || 0;
   var tracksClosed = 0;
@@ -105,4 +181,23 @@ function createVideoElement(width) {
   videoElement.setAttribute("muted", "true");
   videoElement.playsInline = true;
   return videoElement;
+}
+
+function createCanvasElement(width, height, customId) {
+  const canvasWidth = width;
+  const canvasHeight = height;
+  const canvasElement = document.createElement("canvas");
+  canvasElement.style.width = `${canvasWidth}px`;
+  canvasElement.style.height = `${canvasHeight}px`;
+  // canvasElement.style.display = "none";
+  canvasElement.id = isNullOrUndefined(customId) ? "qr-canvas" : customId;
+  return canvasElement;
+}
+
+function isNullOrUndefined(obj) {
+  return (typeof obj === "undefined") || obj === null;
+}
+
+function getTimeoutFps(fps) {
+  return 1000 / fps;
 }

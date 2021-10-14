@@ -4,25 +4,28 @@
 <body>
     <div id="qr-reader" style="width:500px"></div>
     <div id="qr-reader-results"></div>
-    <button id="start-el">start</button>
-    <button id="stop-el">stop</button>
+    <div class="button-bar">
+        <button id="start-el">start</button>
+        <button id="stop-el">stop</button>
+    </div>
     <!-- <video id="video" autoPlay playsInline ></video> -->
     <div id="sanner"></div>
     
 </body>
+<script src="./html5-qrcode.min.js"></script>
 <script src="./scan.js"></script> 
 <style>
-    #start-el {
-        position: absolute;
-        top: 400px;
-        font-size: 40px;
+
+    .button-bar {
+        padding: 10px;
     }
 
-    #stop-el {
-        position: absolute;
-        top: 400px;
-        left: 200px;
+    button {
         font-size: 40px;
+        margin-right: 10px;
+    }
+    canvas {
+        border: 1px solid red;
     }
 
 
