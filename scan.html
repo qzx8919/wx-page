@@ -8,8 +8,11 @@
         <button id="start-el">start</button>
         <button id="stop-el">stop</button>
     </div>
+    <div id="scannerBox"></div>
     <!-- <video id="video" autoPlay playsInline ></video> -->
-    <div id="sanner"></div>
+    <!-- <div id="sanner">
+        <div class="scan-area"><div class="mark top-left"></div><div class="mark top-right"></div><div class="mark bottom-left"></div><div class="mark bottom-right"></div></div>
+    </div> -->
     
 </body>
 <!-- <script src="./html5-qrcode.min.js"></script> -->
@@ -27,6 +30,84 @@
     canvas {
         border: 1px solid red;
     }
+
+.scan-area {
+    position: absolute;
+    z-index: 10;
+    width: 400px;
+    height: 400px;
+    left: 100px;
+    top: 100px;
+    border: 1px solid white;
+    box-sizing: border-box;
+    box-shadow: 0 0 100px 200px rgb(0 0 0 / 70%);
+}
+
+.scan-area .mark {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #3cb067;
+    background: transparent;
+}
+.mark, mark {
+    padding: .2em;
+    background-color: #fcf8e3;
+}
+
+
+.scan-area .top-left {
+    top: -1px;
+    left: -1px;
+    border-color: #3cb067 transparent transparent #3cb067;
+}
+
+.scan-area .top-right {
+    top: -1px;
+    right: -1px;
+    border-color: #3cb067 #3cb067 transparent transparent;
+}
+
+.scan-area .bottom-left {
+    bottom: -1px;
+    left: -1px;
+    border-color: transparent transparent #3cb067 #3cb067;
+}
+
+.scan-area .bottom-right {
+    bottom: -1px;
+    right: -1px;
+    border-color: transparent #3cb067 #3cb067 transparent;
+}
+
+.scan-area::after {
+    content: ' ';
+    width: 100%;
+    display: block;
+    height: 4px;
+    position: absolute;
+    animation: move 3s linear infinite;
+    background: -moz-linear-gradient(left, rgba(76,175,80,0.25) 0%, rgba(76,175,80,0.25) 10%, rgba(76,175,80,1) 50%, rgba(76,175,80,0.25) 90%, rgba(76,175,80,0.25) 100%);
+    background: -webkit-linear-gradient(left, rgba(76,175,80,0.25) 0%,rgba(76,175,80,0.25) 10%,rgba(76,175,80,1) 50%,rgba(76,175,80,0.25) 90%,rgba(76,175,80,0.25) 100%);
+    background: linear-gradient(to right, rgba(76,175,80,0.25) 0%,rgba(76,175,80,0.25) 10%,rgba(76,175,80,1) 50%,rgba(76,175,80,0.25) 90%,rgba(76,175,80,0.25) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#404caf50', endColorstr='#404caf50',GradientType=1 );
+}
+
+
+@keyframes move {
+  0% {
+    top: 0;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+#scannerBox {
+    width: 500px;
+    height: 600px;
+    border: 1px solid red;
+}
 
 
 </style>
@@ -53,17 +134,17 @@
         const stopEl = document.getElementById("stop-el");
 
         let camera = null;
-        const sanner = document.getElementById("sanner");
-        camera = new Camera(sanner);
+        const scannerBox = document.getElementById("scannerBox");
+        camera = new Camera(scannerBox);
 
         startEl.addEventListener('click', function(e){
             console.log('start the camera ... ')
-            camera.open()
+            camera.start()
         });
 
         stopEl.addEventListener('click', function(e){
             console.log("stop the camera .... ");
-            camera.close();
+            camera.stop();
         })
 
     });
