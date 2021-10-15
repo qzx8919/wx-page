@@ -24,6 +24,8 @@
     }
 
     button {
+        position: relative;
+        z-index: 1000;
         font-size: 40px;
         margin-right: 10px;
     }
@@ -93,6 +95,18 @@
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#404caf50', endColorstr='#404caf50',GradientType=1 );
 }
 
+.scanner-box {
+  position: absolute;
+  z-index: 999;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
+  background-color: #000;
+}
+
+
 
 @keyframes move {
   0% {
@@ -135,7 +149,7 @@
 
         let camera = null;
         const scannerBox = document.getElementById("scannerBox");
-        camera = new Camera(scannerBox);
+        camera = new Camera();
 
         startEl.addEventListener('click', function(e){
             console.log('start the camera ... ')

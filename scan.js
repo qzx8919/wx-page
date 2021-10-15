@@ -43,15 +43,21 @@ function Camera(el) {
   };
   this.isQRboxEnable = false;
 
+  if (!this.el) {
+    this.initContainer();
+  }
+
   this.init();
 }
 
-Camera.prototype.init = function () {
-  const wrapWidth = this.el.clientWidth;
-  console.log(wrapWidth);
-  this.wrapWidth = wrapWidth;
-  console.log(this.qrbox);
+Camera.prototype.initContainer = function () {
+  const container = document.createElement('div');
+  container.className = 'scanner-box';
+  document.body.appendChild(container);
+  this.el = container;
+};
 
+Camera.prototype.init = function () {
   this.canvas = createCanvasElement(this.qrbox.width, this.qrbox.height);
   this.context = this.canvas.getContext('2d');
   this.context.canvas.width = this.qrbox.width;
@@ -127,54 +133,57 @@ Camera.prototype.scan = function (onsuccess, onerror) {
 };
 
 Camera.prototype.start = function (qrCodeSuccessCallback, qrCodeErrorCallback) {
-  const wrapWidth = this.wrapWidth || 400;
-  const video = createVideoElement(wrapWidth);
-  this.el?.appendChild(video);
-  this.video = video;
+  this.el.style.display = 'block';
+  setTimeout(() => {
+    const wrapWidth = this.el.clientWidth || 400;
+    const video = createVideoElement(wrapWidth);
+    this.el?.appendChild(video);
+    this.video = video;
 
-  const onsuccess = (stream) => {
-    video.srcObject = stream;
-    const onVideoError = () => {
-      stream.stop();
+    const onsuccess = (stream) => {
+      video.srcObject = stream;
+      const onVideoError = () => {
+        stream.stop();
+      };
+      this.mediaStream = stream;
+      stream.onended = onVideoError;
+      // Attach listeners to video.
+      video.onabort = onVideoError;
+      video.onerror = onVideoError;
+      video.onplaying = () => {
+        console.log('in the onplaying');
+        const videoWidth = video.clientWidth;
+        const videoHeight = video.clientHeight;
+        if (this.isQRboxEnable) {
+          this.qrbox.x = (videoWidth - this.qrbox.width) / 2;
+          this.qrbox.y = (videoHeight - this.qrbox.height) / 2;
+        } else {
+          this.context.canvas.width = videoWidth;
+          this.context.canvas.height = videoHeight;
+          this.qrbox.width = videoWidth;
+          this.qrbox.height = videoHeight;
+        }
+        this.qrScanRegion(videoWidth, videoHeight);
+        // start scanning after video feed has started
+        this.foreverScan(qrCodeSuccessCallback, qrCodeErrorCallback);
+        // resolve(/* void */ null);
+      };
+
+      video.onloadedmetadata = () => {
+        if (stream.active) {
+          video.play();
+        } else {
+          console.log('stream is not active ... ');
+        }
+      };
     };
-    this.mediaStream = stream;
-    stream.onended = onVideoError;
-    // Attach listeners to video.
-    video.onabort = onVideoError;
-    video.onerror = onVideoError;
-    video.onplaying = () => {
-      console.log('in the onplaying');
-      const videoWidth = video.clientWidth;
-      const videoHeight = video.clientHeight;
-      if (this.isQRboxEnable) {
-        this.qrbox.x = (videoWidth - this.qrbox.width) / 2;
-        this.qrbox.y = (videoHeight - this.qrbox.height) / 2;
-      } else {
-        this.context.canvas.width = videoWidth;
-        this.context.canvas.height = videoHeight;
-        this.qrbox.width = videoWidth;
-        this.qrbox.height = videoHeight;
-      }
-      this.qrScanRegion(videoWidth, videoHeight);
-      // start scanning after video feed has started
-      this.foreverScan(qrCodeSuccessCallback, qrCodeErrorCallback);
-      // resolve(/* void */ null);
+
+    const onerror = (err) => {
+      console.log('error function ', err);
     };
 
-    video.onloadedmetadata = () => {
-      if (stream.active) {
-        video.play();
-      } else {
-        console.log('stream is not active ... ');
-      }
-    };
-  };
-
-  const onerror = (err) => {
-    console.log('error function ', err);
-  };
-
-  this.scan(onsuccess, onerror);
+    this.scan(onsuccess, onerror);
+  }, 0);
 };
 
 Camera.prototype.foreverScan = function (qrCodeSuccessCallback, qrCodeErrorCallback) {
@@ -247,6 +256,7 @@ Camera.prototype.foreverScan = function (qrCodeSuccessCallback, qrCodeErrorCallb
 
 Camera.prototype.stop = function () {
   console.log('begin to close the camera .... ');
+  this.el.style.display = '';
   if (this.foreverScanTimeout) {
     clearTimeout(this.foreverScanTimeout);
     this.foreverScanTimeout = null;
